@@ -25,7 +25,7 @@ Sistema para automatizar el procesamiento de archivos Excel de PQRS (Peticiones,
 
 1. Clonar el repositorio:
    ```bash
-   git clone https://github.com/tu-usuario/automatizacion-pqrs.git
+   git clone https://github.com/Tics-Yondo/automatizacion-pqrs.git
    cd automatizacion-pqrs
    ```
 
@@ -153,6 +153,5 @@ Por favor, asegúrese de actualizar las pruebas según corresponda.
 
 ## Contacto
 
-Tu Nombre - tu.email@ejemplo.com
-
-Enlace del Proyecto: https://github.com/tu-usuario/automatizacion-pqrs
+Secretaría De Planeación, Tics Y Desarrollo Territorial - tics@yondo-antioquia.gov.co
+Enlace del Proyecto: https://github.com/Tics-Yondo/automatizacion-pqrs.git
