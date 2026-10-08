@@ -1,5 +1,6 @@
 import datetime
 from functools import lru_cache
+from typing import Any
 
 import pandas as pd
 
@@ -7,17 +8,25 @@ from .config import Config
 from .utils import normalizar_texto
 
 
-def _parse_fecha_string(valor: str) -> pd.Timestamp:
+def _convertir_fecha_scalar(valor, fmt) -> pd.Timestamp | None:
+    """Convierte un valor a Timestamp usando el formato dado, o None si falla."""
+    try:
+        return pd.Timestamp(datetime.datetime.strptime(str(valor).strip(), fmt))
+    except (ValueError, TypeError):
+        return None
+
+
+def _parse_fecha_string(valor: str) -> Any:
     """Parse a date string using known formats, returning NaT if parsing fails."""
     if not isinstance(valor, str):
         return pd.NaT
-    for fmt in ("%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y", "%Y/%m/%d"):
 
-        def _convertir_fecha_scalar(valor, fmt):
-            try:
-                return pd.Timestamp(datetime.datetime.strptime(str(valor).strip(), fmt))
-            except (ValueError, TypeError):
-                return None
+    for fmt in ("%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y", "%Y/%m/%d"):
+        fecha = _convertir_fecha_scalar(valor, fmt)
+        if fecha is not None:
+            return fecha
+
+    return pd.NaT
 
 
 @lru_cache(maxsize=4)
@@ -39,6 +48,7 @@ def _cargar_dias_feriados_cached(ruta_archivo: str, hoja: str) -> frozenset:
     fechas = []
 
     for valor in df_feriados.to_numpy().ravel():
+        fecha: Any = None
         if isinstance(valor, (int, float)) and not pd.isna(valor):
             # Excel almacena fechas como números seriales.
             if 40000 <= float(valor) <= 60000:

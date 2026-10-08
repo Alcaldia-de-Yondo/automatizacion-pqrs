@@ -94,3 +94,15 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101", "PLR2004"]  # permitir assert y magic values en tests
+
+[[tool.mypy.overrides]]
+module = [
+    "googleapiclient.*",
+    "google.*",
+    "google_auth_oauthlib.*",
+    "google.auth.*",
+    "google.oauth2.*",
+    "pandas.*",
+    "openpyxl.*",
+]
+ignore_missing_imports = true
