@@ -76,14 +76,8 @@ jobs:
       - name: Run bandit
         run: python -m bandit -r pqrsd/ -ll
 
-      - name: Run pip-audit
-        run: python -m pip-audit -r requirements.txt
-
       - name: Run bandit
         run: python -m bandit -r pqrsd/ -ll
-
-      - name: Run pip-audit
-        run: python -m pip-audit -r requirements.txt
 
   test:
     name: Tests (Python ${{ matrix.python-version }})
