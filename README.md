@@ -138,7 +138,12 @@ flake8
 
 ## Licencia
 
-Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
+## Licencia
+
+Copyright (c) 2026 Alcaldía de Yondó, Antioquia.
+Todos los derechos reservados.
+
+Ver [LICENSE](LICENSE) para más detalles.
 
 ## Contribuciones
 
