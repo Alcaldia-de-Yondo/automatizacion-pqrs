@@ -1,0 +1,180 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+#  Usually these files are written by a python script from a temporary
+#  directory before pyinstaller writes the .exe  */
+#PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+.ruff_cache/
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# PyReactive
+.pytastic/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+#   https://github.com/pyenv/pyenv/wiki
+
+# .pypackages
+/.pypackages
+
+# Directory for instrumented generic profiles
+*.gcda
+*.gcno
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.komodoproject
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Excel temporary files
+~$*
+
+# Temporary files
+
+# Credenciales - NUNCA commitear
+credentials.json
+token.json
+token_gmail_backup.json
+.env
+.env.local
+*.credentials.json
+
+# Entorno virtual
+.venv/
+venv/
+env/
+
+# Cachés
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+
+# Logs y archivos temporales
+*.txt
+!requirements.txt
+!requirements-dev.txt
+*.log
+
+# Backups
+*.bak
+*.py.bak
+*.tmp
+
+# Excel generados
+*.xlsx
+
+# Scripts de parcheo
+append_drive.py
+fix_script2.py
+get_token.py
+replace_loader.py
+verify_drive.py
+verify_imports.py
+AutomatizacionPQRS.py
+
+# Documentos de verificación
+VERIFICATION_SUMMARY.md
+*.tmp
+*.temp
+temp/
+
+# Google Drive credentials
+credentials.json
+token.json
+service_account.json
+*.credentials.json
+oauth_credentials.json
+
+# Local development
+local_settings.py
+import_check*
+install_output
+dev_install_output
+verify_imports
+VERIFICATION_SUMMARY
+
+# Test files (root only)
+/test_*.py
