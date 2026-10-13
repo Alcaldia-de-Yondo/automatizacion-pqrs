@@ -35,7 +35,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/Tics-Yondo/automatizacion-pqrs"
+Homepage = "https://github.com/Alcaldia-de-Yondo/automatizacion-pqrs"
 
 [project.scripts]
 automatizacion-pqrs = "pqrsd.main:main"

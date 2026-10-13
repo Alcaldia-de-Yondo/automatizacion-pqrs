@@ -171,4 +171,4 @@ Por favor, asegúrese de actualizar las pruebas según corresponda.
 ## Contacto
 
 Secretaría De Planeación, Tics Y Desarrollo Territorial - tics@yondo-antioquia.gov.co
-Enlace del Proyecto: https://github.com/Tics-Yondo/automatizacion-pqrs.git
+Enlace del Proyecto: https://github.com/Alcaldia-de-Yondo/automatizacion-pqrs
