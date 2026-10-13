@@ -109,6 +109,10 @@ class Config:
                 "PREDIOS",
                 "AVALUO CATASTRAL",
                 "AVALUO",
+                "MATRICULA INMOBILIARIA",
+                "CERTIFICADO DE LIBERTAD",
+                "ESCRITURA",
+                "ESCRITURA PUBLICA",
             ),
         ),
         (
@@ -147,6 +151,12 @@ class Config:
                 "ALUMBRADO",
                 "ACUEDUCTO",
                 "ALCANTARILLADO",
+                "LICENCIA",
+                "LICENCIAS",
+                "AMPLIACION",
+                "CONSTRUCCION",
+                "LEGALIZACION",
+                "OCUPACION DE CAZA",
             ),
         ),
         (

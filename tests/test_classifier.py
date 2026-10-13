@@ -84,3 +84,47 @@ def test_returns_valid_area():
         df = pd.DataFrame({"RESUMEN DE ASUNTO": [case]})
         result = classifier.clasificar(df)
         assert result["AREA"].iloc[0] in config.AREAS_PERMITIDAS
+
+
+def test_ordenamiento_licencias_y_construccion():
+    """Licencias, ampliaciones y legalizaciones van a ORDENAMIENTO TERRITORIAL."""
+    config = Config()
+    classifier = AreaClassifier(config)
+    casos = [
+        "SOLICITUD DE AMPLIACION DE LICENCIA DE CONSTRUCCION",
+        "SOLICITUD PERMISO DE OCUPACION DE CAZA Y CONSTRUCCION",
+        "LEGALIZACION DE UNA EDIFICACION EN LA VEREDA",
+    ]
+    for caso in casos:
+        df = pd.DataFrame({"RESUMEN DE ASUNTO": [caso]})
+        result = classifier.clasificar(df)
+        assert result["AREA"].iloc[0] == "ORDENAMIENTO TERRITORIAL"
+
+
+def test_catastro_matricula_y_escritura():
+    """Matrícula inmobiliaria, certificado de libertad y escritura van a CATASTRO."""
+    config = Config()
+    classifier = AreaClassifier(config)
+    casos = [
+        "SOLICITUD DE MATRICULA INMOBILIARIA Y CERTIFICADO DE LIBERTAD",
+        "SOLICITUD DE COPIA DE ESCRITURA PUBLICA",
+    ]
+    for caso in casos:
+        df = pd.DataFrame({"RESUMEN DE ASUNTO": [caso]})
+        result = classifier.clasificar(df)
+        assert result["AREA"].iloc[0] == "CATASTRO"
+
+
+def test_fallback_generico_sigue_siendo_planeacion():
+    """Texto genérico sin keywords temáticas sigue cayendo al default."""
+    config = Config()
+    classifier = AreaClassifier(config)
+    casos = [
+        "SOLICITUD DE INFORMACION SOBRE UN TRAMITE",
+        "ENTREGA DE FORMATO POR SEMANA",
+        "INVITACION A REUNION COMUNAL",
+    ]
+    for caso in casos:
+        df = pd.DataFrame({"RESUMEN DE ASUNTO": [caso]})
+        result = classifier.clasificar(df)
+        assert result["AREA"].iloc[0] == "SECRETARIA DE PLANEACIÓN"

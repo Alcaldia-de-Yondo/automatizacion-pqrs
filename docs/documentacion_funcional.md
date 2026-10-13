@@ -96,9 +96,9 @@ detiene la ejecución (garantía de integridad del dato):
 |------|------------------------------|
 | SISBEN | Clasificación, encuesta o puntaje SISBEN |
 | SENA | Cursos y formación del SENA |
-| CATASTRO | Avalúos, predios, impuesto predial |
+| CATASTRO | Avalúos, predios, impuesto predial, matrícula inmobiliaria, certificado de libertad, escrituras |
 | BANCO DE PROYECTOS | Proyectos de inversión, BPIN, MGA, articulación territorial |
-| ORDENAMIENTO TERRITORIAL | POT, uso del suelo, servicios públicos, acueducto |
+| ORDENAMIENTO TERRITORIAL | POT, uso del suelo, licencias y construcción, ampliaciones, legalizaciones, servicios públicos, acueducto |
 | GESTION DE RIESGOS | Emergencias, desastres, damnificados |
 | ABOGADA(O) | Tutelas, recursos, conceptos jurídicos |
 | COMUNICACIONES | Prensa, redes sociales, publicidad institucional |
