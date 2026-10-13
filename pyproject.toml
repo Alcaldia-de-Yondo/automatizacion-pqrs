@@ -20,7 +20,7 @@ dependencies = [
 ]
 license = {file = "LICENSE"}
 authors = [
-    {name = "Tu Nombre", email = "tu.email@ejemplo.com"}
+    {name = "Secretaría De Planeación, Tics Y Desarrollo Territorial", email = "tics@yondo-antioquia.gov.co"}
 ]
 keywords = ["pqrs", "automatización", "excel", "planeación"]
 classifiers = [
@@ -34,7 +34,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/tu-usuario/automatizacion-pqrs"
+Homepage = "https://github.com/Tics-Yondo/automatizacion-pqrs"
 
 [project.scripts]
 automatizacion-pqrs = "pqrsd.main:main"
