@@ -133,10 +133,16 @@ __pycache__/
 .coverage
 
 # Logs y archivos temporales
+logs/
 *.txt
 !requirements.txt
 !requirements-dev.txt
 *.log
+
+# Artefactos de pruebas manuales
+.main_prueba.*
+.pytest_final.*
+/fix_saver*.py
 
 # Backups
 *.bak

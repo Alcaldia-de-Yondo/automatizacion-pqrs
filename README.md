@@ -57,6 +57,22 @@ O usando el comando instalado:
 automatizacion-pqrs
 ```
 
+## Ejecución en Ubuntu/VPS
+
+Antes de programar la ejecución, otorgue permiso de ejecución al script:
+
+```bash
+chmod +x scripts/run.sh
+```
+
+El script puede ejecutarse manualmente así:
+
+```bash
+./scripts/run.sh
+```
+
+Las instrucciones para instalar el servicio y temporizador de `systemd` están en [deploy/README.md](deploy/README.md).
+
 ## Estructura del Proyecto
 
 ```
@@ -94,16 +110,19 @@ automatizacion-pqrs/
 
 ## Configuración de Google Drive (Opcional)
 
-Para usar Google Drive:
+Para usar Google Drive con OAuth:
 
-1. Obtener credenciales de servicio de Google Cloud Console
-2. Compartir el archivo de Excel con la cuenta de servicio
+1. Obtener `credentials.json` (cliente OAuth de escritorio) desde Google Cloud Console
+2. Generar `token.json` con `get_token.py` en una máquina con navegador
 3. Configurar en `.env`:
    ```env
-   GOOGLE_SERVICE_ACCOUNT_FILE=path/to/service-account-key.json
-   GOOGLE_DRIVE_FOLDER_ID=ID_de_la_carpeta_de_Google_Drive
-   GOOGLE_DRIVE_FILE_NAME=1. RECEPCIÓN DE SUGERENCIAS QUEJAS Y RECLAMOS.xlsx
-   USE_GOOGLE_DRIVE=True
+   GOOGLE_APPLICATION_CREDENTIALS=credentials.json
+   GOOGLE_OAUTH_TOKEN=token.json
+   GOOGLE_DRIVE_FOLDER_RECEPCION=ID_carpeta_recepcion
+   GOOGLE_DRIVE_ARCHIVO_ORIGEN=1. RECEPCIÓN DE SUGERENCIAS QUEJAS Y RECLAMOS.xlsx
+   GOOGLE_DRIVE_FOLDER_PLANEACION=ID_carpeta_planeacion
+   GOOGLE_DRIVE_ARCHIVO_SALIDA=-PLANEACIÓN - RECEPCIÓN DE SUGERENCIAS QUEJAS Y RECLAMOS-Pr.xlsx
+   USE_GOOGLE_DRIVE=true
    ```
 
 ## Pruebas

@@ -1,0 +1,10 @@
+[Unit]
+Description=Ejecuta PQRSD cada 15 minutos
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=15min
+Unit=pqrsd.service
+
+[Install]
+WantedBy=timers.target

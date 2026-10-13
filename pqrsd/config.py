@@ -1,16 +1,36 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import ClassVar
 
 import pandas as pd
+from dotenv import load_dotenv
+
+load_dotenv()  # take environment variables from .env.
+
+
+def _env_int(nombre: str, por_defecto: int) -> int:
+    """Lee un entero de entorno; ante un valor inválido usa el valor por defecto."""
+    try:
+        return int(os.getenv(nombre, str(por_defecto)))
+    except ValueError:
+        return por_defecto
 
 
 class Config:
     """Clase de configuración centralizada."""
 
-    CARPETA = Path(r"C:\Users\TIC\Documents\Automatización PQRS")
-    ARCHIVO_ORIGEN = CARPETA / "1. RECEPCIÓN DE SUGERENCIAS QUEJAS Y RECLAMOS.xlsx"
+    # Paths portables
+    BASE_DIR: Path = Path(
+        os.getenv("PQRSD_BASE", Path(__file__).resolve().parent.parent)
+    )
+    LOGS_DIR: Path = BASE_DIR / "logs"
+    TMP_DIR: Path = BASE_DIR / "tmp"
+    INFORMES_DIR: Path = BASE_DIR / "informes"
+    ENVIOS_LOG_PATH: Path = LOGS_DIR / "envios.json"
+
+    CARPETA = BASE_DIR
 
     ARCHIVO_SALIDA = (
         CARPETA / "-PLANEACIÓN - RECEPCIÓN DE SUGERENCIAS QUEJAS Y RECLAMOS.xlsx"
@@ -25,10 +45,6 @@ class Config:
     DIAS_TERMINO_INFORMACION = 10
     DIAS_TERMINO_CONSULTA = 30
 
-    # ============================================================
-    # CONFIGURACIÓN DE GOOGLE DRIVE
-    # ============================================================
-    # Ruta al archivo JSON de credenciales de servicio
     # ============================================================
     # COLUMNAS PRINCIPALES
     # ============================================================
@@ -269,23 +285,56 @@ class Config:
         "RADICADO DE RESPUESTA",
         "FECHA DE ENTREGA DE RESPUESTA",
     ]
-    GOOGLE_SERVICE_ACCOUNT_FILE = None
-    # ID de la carpeta en Google Drive donde está el archivo
-    GOOGLE_DRIVE_FOLDER_ID = None
-    # Nombre del archivo en Google Drive
-    GOOGLE_DRIVE_FILE_NAME = "1. RECEPCIÓN DE SUGERENCIAS QUEJAS Y RECLAMOS.xlsx"
+
+    # Configuración de emails
+    GMAIL_SCOPES: ClassVar[list[str]] = [
+        "https://www.googleapis.com/auth/drive",
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/gmail.send",
+    ]
+    GMAIL_ACCOUNT: str = os.getenv("GMAIL_ACCOUNT", "tics@yondo-antioquia.gov.co")
+    CORREO_GENERAL: str = os.getenv(
+        "CORREO_GENERAL", "secretariadeplaneacion@yondo-antioquia.gov.co"
+    )
+    DIAS_ENVIO_PERIODICO: int = _env_int("DIAS_ENVIO_PERIODICO", 5)
+    MODO_PRUEBA: bool = os.getenv("MODO_PRUEBA", "false").lower() == "true"
+
+    # OAuth configuration
+    GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "")
+    GOOGLE_OAUTH_TOKEN = os.getenv("GOOGLE_OAUTH_TOKEN", "")
+    # IDs de carpetas en Google Drive
+    GOOGLE_DRIVE_FOLDER_RECEPCION = os.getenv(
+        "GOOGLE_DRIVE_FOLDER_RECEPCION", "1a2MrBYHEUc89eF62CiqxkPTWXNj9Z2rb"
+    )
+    GOOGLE_DRIVE_ARCHIVO_ORIGEN = os.getenv(
+        "GOOGLE_DRIVE_ARCHIVO_ORIGEN",
+        "1. RECEPCIÓN DE SUGERENCIAS QUEJAS Y RECLAMOS.xlsx",
+    )
+    GOOGLE_DRIVE_FOLDER_PLANEACION = os.getenv(
+        "GOOGLE_DRIVE_FOLDER_PLANEACION", "1aZcJ1dQjHHIUIxib13K51kfUgk8egNgj"
+    )
+    GOOGLE_DRIVE_ARCHIVO_SALIDA = os.getenv(
+        "GOOGLE_DRIVE_ARCHIVO_SALIDA",
+        "-PLANEACIÓN - RECEPCIÓN DE SUGERENCIAS QUEJAS Y RECLAMOS-Pr.xlsx",
+    )
     # Activar/desactivar la integración con Google Drive
-    USE_GOOGLE_DRIVE = False
+    USE_GOOGLE_DRIVE = os.getenv("USE_GOOGLE_DRIVE", "false").lower() == "true"
+    if USE_GOOGLE_DRIVE:
+        ARCHIVO_ORIGEN = None
+    else:
+        ARCHIVO_ORIGEN = CARPETA / "1. RECEPCIÓN DE SUGERENCIAS QUEJAS Y RECLAMOS.xlsx"
     # Ruta efectiva del archivo de origen (se establece durante la carga)
     EFFECTIVE_ARCHIVO_ORIGEN = None
 
-    # Nuevas configuraciones para OAuth y carpetas específicas
-    GOOGLE_APPLICATION_CREDENTIALS: str = ""
-    GOOGLE_OAUTH_TOKEN: str = ""
-    GOOGLE_DRIVE_FOLDER_RECEPCION: str = ""
-    GOOGLE_DRIVE_FOLDER_PLANEACION: str = ""
-    GOOGLE_DRIVE_ARCHIVO_ORIGEN: str = ""
-    GOOGLE_DRIVE_ARCHIVO_SALIDA: str = ""
+    def __init__(self):
+        """Inicializa la configuración y crea los directorios operativos."""
+        self._crear_directorios()
+
+    def _crear_directorios(self):
+        """Crea los directorios auxiliares con rutas portables."""
+        self.LOGS_DIR.mkdir(parents=True, exist_ok=True)
+        self.TMP_DIR.mkdir(parents=True, exist_ok=True)
+        self.INFORMES_DIR.mkdir(parents=True, exist_ok=True)
 
     def _validar_config_drive(self):
         """Valida que la configuración de Drive esté completa cuando está activada."""

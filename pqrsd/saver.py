@@ -37,14 +37,13 @@ class ExcelSaver:
         if self.config.USE_GOOGLE_DRIVE:
             print("Intentando subir archivo a Google Drive...")
             drive_manager = DriveManager(self.config)
-            if (
-                drive_manager._get_drive_service()
-            ):  # Verificar si se pudo inicializar el servicio
-                subido_exitosamente = drive_manager.subir_archivo(
+            if drive_manager.autenticar():
+                file_id = drive_manager.crear_nuevo(
                     str(archivo_destino),
-                    self.config.GOOGLE_DRIVE_FILE_NAME,
-                    self.config.GOOGLE_DRIVE_FOLDER_ID,
+                    self.config.GOOGLE_DRIVE_ARCHIVO_SALIDA,
+                    self.config.GOOGLE_DRIVE_FOLDER_PLANEACION,
                 )
+                subido_exitosamente = file_id is not None
                 if subido_exitosamente:
                     print("Archivo subido exitosamente a Google Drive.")
                 else:
@@ -66,7 +65,7 @@ class ExcelSaver:
             print("\nArchivo generado y subido correctamente:")
             print(f"Local: {archivo_destino}")
             print(
-                f"Google Drive: {self.config.GOOGLE_DRIVE_FILE_NAME} en carpeta {self.config.GOOGLE_DRIVE_FOLDER_ID}"
+                f"Google Drive: {self.config.GOOGLE_DRIVE_ARCHIVO_SALIDA} en carpeta {self.config.GOOGLE_DRIVE_FOLDER_PLANEACION}"
             )
         else:
             print("\nArchivo generado correctamente:")

@@ -1,0 +1,12 @@
+[Unit]
+Description=Automatización PQRSD
+After=network.target
+
+[Service]
+Type=oneshot
+User=admin_seguridad
+WorkingDirectory=/home/admin_seguridad/Automatizacion_Pqrsd
+ExecStart=/home/admin_seguridad/Automatizacion_Pqrsd/scripts/run.sh
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=full

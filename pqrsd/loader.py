@@ -22,50 +22,48 @@ class ExcelLoader:
         if self.config.USE_GOOGLE_DRIVE:
             self.config._validar_config_drive()
 
-        # Intentar obtener el archivo desde Google Drive si está configurado
-        archivo_local = self.config.ARCHIVO_ORIGEN
-        archivo_temporal = None
-
         if self.config.USE_GOOGLE_DRIVE:
+            # Modo Drive: obtener archivo de Drive
             drive_manager = DriveManager(self.config)
-            if (
-                drive_manager._get_drive_service()
-            ):  # Verificar si se pudo inicializar el servicio
-                print("Intentando descargar archivo desde Google Drive...")
+            if not drive_manager.autenticar():
+                raise RuntimeError("No se pudo inicializar el servicio de Google Drive")
 
-                # Buscar el archivo por nombre en la carpeta especificada
-                archivo_drive = drive_manager.buscar_archivo_por_nombre(
-                    self.config.GOOGLE_DRIVE_ARCHIVO_ORIGEN,
-                    self.config.GOOGLE_DRIVE_FOLDER_RECEPCION,
+            archivo_drive = drive_manager.buscar_archivo_por_nombre(
+                self.config.GOOGLE_DRIVE_ARCHIVO_ORIGEN,
+                self.config.GOOGLE_DRIVE_FOLDER_RECEPCION,
+            )
+            if not archivo_drive:
+                raise FileNotFoundError(
+                    f"No se encontró el archivo '{self.config.GOOGLE_DRIVE_ARCHIVO_ORIGEN}' "
+                    f"en la carpeta de Recepción de Google Drive."
                 )
 
-                if archivo_drive:
-                    # Crear un archivo temporal para la descarga
-                    archivo_temporal = (
-                        Path(tempfile.gettempdir())
-                        / self.config.GOOGLE_DRIVE_ARCHIVO_ORIGEN
-                    )
-                    if drive_manager.descargar_archivo(
-                        archivo_drive["id"], archivo_temporal
-                    ):
-                        archivo_local = archivo_temporal
-                        print(f"Usando archivo descargado: {archivo_local}")
-                    else:
-                        print(
-                            "Error al descargar desde Google Drive. Intentando usar archivo local si existe."
-                        )
-                else:
-                    print(
-                        f"No se encontró el archivo '{self.config.GOOGLE_DRIVE_ARCHIVO_ORIGEN}' en Google Drive. Intentando usar archivo local si existe."
-                    )
-            else:
-                print(
-                    "No se pudo inicializar el servicio de Google Drive. Intentando usar archivo local si existe."
-                )
+            # Descargar a un archivo temporal
+            archivo_temporal = (
+                Path(tempfile.gettempdir()) / self.config.GOOGLE_DRIVE_ARCHIVO_ORIGEN
+            )
+            if not drive_manager.descargar_archivo(
+                archivo_drive["id"], archivo_temporal
+            ):
+                raise RuntimeError("Error al descargar el archivo desde Google Drive")
 
+            archivo_local = archivo_temporal
+        else:
+            # Modo local: usar archivo local
+            if self.config.ARCHIVO_ORIGEN is None:
+                raise ValueError("ARCHIVO_ORIGEN no está configurado para modo local")
+            if not self.config.ARCHIVO_ORIGEN.exists():
+                raise FileNotFoundError(
+                    f"No se encontró el archivo local: {self.config.ARCHIVO_ORIGEN}"
+                )
+            archivo_local = self.config.ARCHIVO_ORIGEN
         # Verificar si el archivo existe (ya sea el original o el temporal)
         if not archivo_local.exists():
-            if archivo_temporal and archivo_temporal.exists():
+            if (
+                self.config.USE_GOOGLE_DRIVE
+                and archivo_temporal
+                and archivo_temporal.exists()
+            ):
                 # El temporal fue creado pero algo salió mal
                 raise FileNotFoundError(
                     f"No se encontró el archivo:\n{archivo_local}\n"
@@ -91,7 +89,11 @@ class ExcelLoader:
         print(f"Filas encontradas: {len(df):,}")
 
         # Limpiar archivo temporal si se creó
-        if archivo_temporal and archivo_temporal.exists():
+        if (
+            self.config.USE_GOOGLE_DRIVE
+            and archivo_temporal
+            and archivo_temporal.exists()
+        ):
             try:
                 archivo_temporal.unlink()
                 print(f"Archivo temporal eliminado: {archivo_temporal}")
