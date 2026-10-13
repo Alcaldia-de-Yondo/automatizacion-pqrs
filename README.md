@@ -160,7 +160,7 @@ flake8
 Copyright (c) 2026 Alcaldía de Yondó, Antioquia.
 Todos los derechos reservados.
 
-Ver [LICENSE](LICENSE) para más detalles.
+Ver [License](License) para más detalles.
 
 ## Contribuciones
 
