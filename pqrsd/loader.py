@@ -88,21 +88,6 @@ class ExcelLoader:
         print(f"\nHoja utilizada: {hoja_origen}")
         print(f"Filas encontradas: {len(df):,}")
 
-        # Limpiar archivo temporal si se creó
-        if (
-            self.config.USE_GOOGLE_DRIVE
-            and archivo_temporal
-            and archivo_temporal.exists()
-        ):
-            try:
-                archivo_temporal.unlink()
-                print(f"Archivo temporal eliminado: {archivo_temporal}")
-            # Justification: Cleanup of temporary file should not break the process; we catch all errors to ensure continuation.
-            except Exception as e:
-                print(
-                    f"Advertencia: No se pudo eliminar el archivo temporal {archivo_temporal}: {e}"
-                )
-
         # Establecer la ruta efectiva del archivo de origen para uso en otras clases
         self.config.EFFECTIVE_ARCHIVO_ORIGEN = archivo_local
 

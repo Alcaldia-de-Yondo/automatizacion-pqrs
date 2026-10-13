@@ -1,4 +1,6 @@
+import contextlib
 import logging
+from pathlib import Path
 
 from . import emails, envios_log
 from .classifier import AreaClassifier
@@ -105,6 +107,12 @@ class OrquestadorPrincipal:
             df_salida,
             df_pendientes,
         )
+
+        # Limpieza opcional del archivo temporal descargado de Drive
+        efectivo = getattr(self.config, "EFFECTIVE_ARCHIVO_ORIGEN", None)
+        if efectivo is not None and self.config.USE_GOOGLE_DRIVE:
+            with contextlib.suppress(OSError):  # el SO limpiará el temporal eventualmente
+                Path(efectivo).unlink(missing_ok=True)
 
     def _procesar_notificaciones_email(self, df_salida, pqrsd_nuevos):
         """Ejecuta avisos inmediatos e informes periódicos cuando corresponda."""
