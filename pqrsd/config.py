@@ -10,14 +10,6 @@ from dotenv import load_dotenv
 load_dotenv()  # take environment variables from .env.
 
 
-def _env_int(nombre: str, por_defecto: int) -> int:
-    """Lee un entero de entorno; ante un valor inválido usa el valor por defecto."""
-    try:
-        return int(os.getenv(nombre, str(por_defecto)))
-    except ValueError:
-        return por_defecto
-
-
 class Config:
     """Clase de configuración centralizada."""
 
@@ -38,7 +30,7 @@ class Config:
 
     HOJA_SALIDA = "PQRSD 2026"
     FECHA_CORTE = pd.Timestamp("2026-06-23")
-    RESPONSABLE_FIJO = "SECRETARIA   DE PLANEACION"
+    RESPONSABLE_FIJO = "SECRETARIA DE PLANEACIÓN"
     HOJA_FERIADOS = "DÍAS FERIADOS"
     # Términos generales del artículo 14 de la Ley 1755 de 2015.
     DIAS_TERMINO_GENERAL = 15
@@ -82,6 +74,7 @@ class Config:
         "SENA",
         "SISBEN",
         "SOPORTE TIC",
+        "SUPERVISION",
         "TICS",
     )
 
@@ -287,8 +280,11 @@ class Config:
     ]
 
     # Configuración de emails
+    # Scopes mínimos: lectura de Drive (archivos existentes), creación de archivos,
+    # escritura en Sheets y envío por Gmail. Cambiar scopes exige regenerar token.json.
     GMAIL_SCOPES: ClassVar[list[str]] = [
-        "https://www.googleapis.com/auth/drive",
+        "https://www.googleapis.com/auth/drive.readonly",
+        "https://www.googleapis.com/auth/drive.file",
         "https://www.googleapis.com/auth/spreadsheets",
         "https://www.googleapis.com/auth/gmail.send",
     ]
@@ -296,7 +292,7 @@ class Config:
     CORREO_GENERAL: str = os.getenv(
         "CORREO_GENERAL", "secretariadeplaneacion@yondo-antioquia.gov.co"
     )
-    DIAS_ENVIO_PERIODICO: int = _env_int("DIAS_ENVIO_PERIODICO", 5)
+    DIAS_ENVIO_PERIODICO: int = int(os.getenv("DIAS_ENVIO_PERIODICO", "5"))
     MODO_PRUEBA: bool = os.getenv("MODO_PRUEBA", "false").lower() == "true"
 
     # OAuth configuration
@@ -319,6 +315,7 @@ class Config:
         ARCHIVO_ORIGEN = None
     else:
         ARCHIVO_ORIGEN = CARPETA / "1. RECEPCIÓN DE SUGERENCIAS QUEJAS Y RECLAMOS.xlsx"
+
     # Ruta efectiva del archivo de origen (se establece durante la carga)
     EFFECTIVE_ARCHIVO_ORIGEN = None
 
@@ -333,22 +330,19 @@ class Config:
         self.INFORMES_DIR.mkdir(parents=True, exist_ok=True)
 
     def _validar_config_drive(self):
-        """Valida que la configuración de Drive esté completa cuando está activada."""
-        if self.USE_GOOGLE_DRIVE:
-            faltantes = []
-            if not self.GOOGLE_APPLICATION_CREDENTIALS:
-                faltantes.append("GOOGLE_APPLICATION_CREDENTIALS")
-            if not self.GOOGLE_OAUTH_TOKEN:
-                faltantes.append("GOOGLE_OAUTH_TOKEN")
-            if not self.GOOGLE_DRIVE_FOLDER_RECEPCION:
-                faltantes.append("GOOGLE_DRIVE_FOLDER_RECEPCION")
-            if not self.GOOGLE_DRIVE_ARCHIVO_ORIGEN:
-                faltantes.append("GOOGLE_DRIVE_ARCHIVO_ORIGEN")
-            if not self.GOOGLE_DRIVE_FOLDER_PLANEACION:
-                faltantes.append("GOOGLE_DRIVE_FOLDER_PLANEACION")
-            if not self.GOOGLE_DRIVE_ARCHIVO_SALIDA:
-                faltantes.append("GOOGLE_DRIVE_ARCHIVO_SALIDA")
-            if faltantes:
-                raise ValueError(
-                    f"Faltan las siguientes variables de entorno para Google Drive: {', '.join(faltantes)}"
-                )
+        """Valida la configuración de Drive cuando está activada (falla cerrado)."""
+        if not self.USE_GOOGLE_DRIVE:
+            return
+        requeridas = (
+            "GOOGLE_APPLICATION_CREDENTIALS",
+            "GOOGLE_OAUTH_TOKEN",
+            "GOOGLE_DRIVE_FOLDER_RECEPCION",
+            "GOOGLE_DRIVE_ARCHIVO_ORIGEN",
+            "GOOGLE_DRIVE_FOLDER_PLANEACION",
+            "GOOGLE_DRIVE_ARCHIVO_SALIDA",
+        )
+        faltantes = [nombre for nombre in requeridas if not getattr(self, nombre)]
+        if faltantes:
+            raise ValueError(
+                "Faltan variables de entorno para Google Drive: " + ", ".join(faltantes)
+            )

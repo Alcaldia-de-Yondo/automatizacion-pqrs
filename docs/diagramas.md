@@ -3,9 +3,6 @@
 **Entidad:** Alcaldía de Yondó, Antioquia
 **Formato:** [Mermaid](https://mermaid.js.org/) — visible en GitHub, GitLab, VS Code (con extensión) y Typora.
 
-> Estos diagramas describen la lógica del proceso sin exponer código fuente
-> ni datos sensibles (sin identificadores de carpetas, correos ni rutas).
-
 ---
 
 ## 1. Diagrama general del flujo
@@ -23,9 +20,6 @@ flowchart TD
     I --> J["Notificar correo inmediato al área<br/>+ informes periódicos"]
     J --> K["Guardar Excel de salida<br/>y resumen final"]
 ```
-
-**Explicación:** el proceso es lineal y determinístico; cada paso produce
-las entradas del siguiente.
 
 ---
 
@@ -69,8 +63,6 @@ flowchart TD
     G -- Sí --> H["Fecha límite = ese día hábil<br/>se escribe en FECHA LÍMITE"]
 ```
 
-**Reglas:** días hábiles lun-vie sin feriados; si no existe hoja feriados, solo se excluyen sábados y domingos.
-
 ---
 
 ## 4. Diagrama del flujo de correos
@@ -95,10 +87,6 @@ flowchart TD
     N --> O["Enviar informes periódicos"]
     O --> P["Registrar envío periódico en bitacora"]
 ```
-
-**Reglas:**
-- Inmediato: por radicado nuevo al área, con copia al correo general.
-- Periódico: cada N días, informes por área y general enviado a Planeación.
 
 ---
 

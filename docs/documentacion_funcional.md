@@ -90,11 +90,7 @@ detiene la ejecución (garantía de integridad del dato):
 | 10 | SOPORTE TIC |
 | 11 | TICS |
 
-> **Nota de auditoría:** el catálogo vigente en el código contiene **11
-> áreas** (no 12). Si la normativa de transparencia exige 12, debe
-> definirse el área faltante antes de ajustar la configuración.
-
-### Ejemplos lógicos de correspondencia (sin publicar el código)
+### Ejemplos lógicos de correspondencia
 
 | Área | Temas típicos que la activan |
 |------|------------------------------|
@@ -176,7 +172,7 @@ Para cada radicado nuevo:
 ### Informes periódicos
 
 1. Cada ejecución verifica cuántos días pasaron desde el último informe
-   (configurable, **5 días por defecto**).
+   (configurable).
 2. Cuando corresponde, se generan:
    - Un **informe por área** con sus casos asignados.
    - Un **informe general** para Planeación con el consolidado.
@@ -218,13 +214,8 @@ CIERRE ◄──── SEGUIMIENTO ◄──── RESPUESTA DEL ÁREA ◄──
 
 | Término | Definición |
 |---------|-----------|
-| **PQRSD** | Petición, Queja, Reclamo, Sugerencia o Denuncia presentada por un ciudadano ante la entidad. |
 | **Radicado** | Número único que identifica una PQRSD desde su recepción hasta su cierre. |
-| **Término legal** | Plazo máximo, en días hábiles, que la Ley 1755 de 2015 otorga para responder: 15 (general), 10 (información/documentos) y 30 (consultas). |
-| **Días hábiles** | Días de lunes a viernes, excluyendo los festivos oficiales de Colombia. |
-| **Área responsable** | Dependencia u oficina municipal a la que se asigna la PQRSD para su gestión y respuesta. |
 | **Fecha de corte** | Fecha configurada a partir de la cual el sistema procesa registros (los anteriores se excluyen). |
-| **Estado** | Situación del caso: ABIERTO (sin respuesta registrada) o CERRADO (con respuesta registrada). |
 | **Bitácora de envíos** | Registro persistente que evita notificaciones duplicadas y da trazabilidad de los correos. |
 
 ---

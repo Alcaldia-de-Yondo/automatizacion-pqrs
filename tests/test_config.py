@@ -37,9 +37,10 @@ def test_config_areas_permitidas():
         "SENA",
         "SISBEN",
         "SOPORTE TIC",
+        "SUPERVISION",
         "TICS",
     )
-    assert config.AREAS_PERMITIDAS == expected_areas
+    assert expected_areas == config.AREAS_PERMITIDAS
 
 
 def test_config_reglas_areas():

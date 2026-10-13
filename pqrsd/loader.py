@@ -1,3 +1,4 @@
+import os
 import re
 import tempfile
 from pathlib import Path
@@ -18,7 +19,6 @@ class ExcelLoader:
     def cargar_datos(self):
         """Valida y carga la hoja PQRSD más reciente."""
         separador("CARGANDO ARCHIVO DE ORIGEN")
-        # Validar configuración de Drive si está activado
         if self.config.USE_GOOGLE_DRIVE:
             self.config._validar_config_drive()
 
@@ -38,10 +38,10 @@ class ExcelLoader:
                     f"en la carpeta de Recepción de Google Drive."
                 )
 
-            # Descargar a un archivo temporal
-            archivo_temporal = (
-                Path(tempfile.gettempdir()) / self.config.GOOGLE_DRIVE_ARCHIVO_ORIGEN
-            )
+            # Descargar a un archivo temporal con nombre único y permisos 600
+            fd, tmp_path = tempfile.mkstemp(suffix=".xlsx")
+            os.close(fd)
+            archivo_temporal = Path(tmp_path)
             if not drive_manager.descargar_archivo(
                 archivo_drive["id"], archivo_temporal
             ):
@@ -98,7 +98,7 @@ class ExcelLoader:
                 archivo_temporal.unlink()
                 print(f"Archivo temporal eliminado: {archivo_temporal}")
             # Justification: Cleanup of temporary file should not break the process; we catch all errors to ensure continuation.
-            except Exception as e:  # noqa: BLE001
+            except Exception as e:
                 print(
                     f"Advertencia: No se pudo eliminar el archivo temporal {archivo_temporal}: {e}"
                 )

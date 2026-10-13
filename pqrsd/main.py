@@ -144,7 +144,7 @@ class OrquestadorPrincipal:
                     correo_area,
                     self.config.CORREO_GENERAL,
                 )
-            except Exception:  # noqa: BLE001
+            except Exception:
                 logger.exception(
                     "Falló la notificación inmediata para %s; se reintentará "
                     "en la próxima ejecución",

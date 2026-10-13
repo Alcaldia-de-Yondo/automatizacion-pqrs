@@ -7,7 +7,7 @@ from .config import Config
 from .drive import DriveManager
 from .output import OutputPreparer
 from .reports import FormateadorHojaPrincipal, FormateadorResumen2, GeneradorResumen2
-from .utils import separador
+from .utils import neutralizar_formulas, separador
 
 
 class ExcelSaver:
@@ -73,7 +73,11 @@ class ExcelSaver:
 
     def _crear_archivo_excel(self, df_salida, df_pendientes, ruta_archivo):
         """Crea el archivo Excel inicial con sus hojas de datos."""
-        pendientes_salida = OutputPreparer(self.config).preparar(df_pendientes)
+        pendientes_salida = neutralizar_formulas(
+            OutputPreparer(self.config).preparar(df_pendientes)
+        )
+        df_salida = neutralizar_formulas(df_salida)
+        pendientes_salida = neutralizar_formulas(pendientes_salida)
 
         # Asegurar que el directorio existe
         Path(ruta_archivo).parent.mkdir(parents=True, exist_ok=True)

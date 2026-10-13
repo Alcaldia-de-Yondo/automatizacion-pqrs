@@ -1,7 +1,9 @@
-from pathlib import Path
 import re
+from pathlib import Path
 
 from googleapiclient.errors import HttpError
+
+from .config import Config
 
 
 class DriveManager:
@@ -26,9 +28,9 @@ class DriveManager:
 
             credentials = Credentials.from_authorized_user_file(
                 self.config.GOOGLE_OAUTH_TOKEN,
-                scopes=["https://www.googleapis.com/auth/drive"],
+                scopes=list(Config.GMAIL_SCOPES),
             )
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             print(f"Error al cargar credenciales OAuth: {e}")
             return None
 
@@ -151,7 +153,7 @@ class DriveManager:
         except (HttpError, ImportError, OSError) as e:
             print(f"Error al descargar archivo desde Google Drive: {e}")
             return False
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             # Justification: Any other unexpected error during the download process.
             print(f"Error inesperado al descargar archivo desde Google Drive: {e}")
             return False
@@ -189,7 +191,7 @@ class DriveManager:
         except (HttpError, ImportError, OSError) as e:
             print(f"Error al subir archivo a Google Drive: {e}")
             return False
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             # Justification: Any other unexpected error during the upload process.
             print(f"Error inesperado al subir archivo a Google Drive: {e}")
             return False
@@ -247,7 +249,7 @@ class DriveManager:
         except (HttpError, ImportError, OSError) as e:
             print(f"Error al descargar archivo desde Google Drive: {e}")
             return None
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             # Justification: Any other unexpected error during the download process.
             print(f"Error inesperado al descargar archivo desde Google Drive: {e}")
             return None
@@ -284,7 +286,7 @@ class DriveManager:
         except (HttpError, ImportError, OSError) as e:
             print(f"Error al subir archivo a Google Drive: {e}")
             return None
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             # Justification: Any other unexpected error during the upload process.
             print(f"Error inesperado al subir archivo a Google Drive: {e}")
             return None

@@ -4,6 +4,7 @@ from pqrsd.utils import (
     asegurar_columnas,
     buscar_columna,
     convertir_fecha,
+    neutralizar_formulas,
     normalizar_texto,
 )
 
@@ -88,3 +89,34 @@ def test_convertir_fecha_datetime():
     result = convertir_fecha(dt)
     expected = pd.Timestamp("2026-01-01")  # normalized to midnight
     assert result == expected
+
+
+def test_neutralizar_formulas_escapa_prefijos_peligrosos():
+    """Celdas tipo =CMD|... o +2+5 no deben llegar a Excel como fórmula."""
+    df = pd.DataFrame(
+        {
+            "ASUNTO": [
+                '=HYPERLINK("http://evil")',
+                "+SUM(A1)",
+                "-2",
+                "@cmd",
+                "normal",
+                42,
+            ]
+        }
+    )
+    resultado = neutralizar_formulas(df)
+    assert resultado["ASUNTO"].tolist() == [
+        '\'=HYPERLINK("http://evil")',
+        "'+SUM(A1)",
+        "'-2",
+        "'@cmd",
+        "normal",
+        42,
+    ]
+
+
+def test_neutralizar_formulas_negativo_sin_guarda():
+    """Test negativo: sin la guarda, pandas escribiría la cadena cruda."""
+    df = pd.DataFrame({"ASUNTO": ["=1+1"]})
+    assert df["ASUNTO"].iloc[0] == "=1+1"  # fallaría si alguien "limpieza" la guarda

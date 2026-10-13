@@ -44,6 +44,7 @@ from .email_templates import (
     obtener_conteo_meses,
     obtener_valor_estado,
 )
+from .utils import neutralizar_formulas
 
 logger = logging.getLogger(__name__)
 
@@ -210,7 +211,7 @@ def generar_excel(df, nombre_informe):
     ruta = CARPETA_SALIDA / nombre_archivo
 
     with pd.ExcelWriter(ruta, engine="openpyxl") as writer:
-        df.to_excel(writer, sheet_name="PQRDS", index=False)
+        neutralizar_formulas(df).to_excel(writer, sheet_name="PQRDS", index=False)
         crear_resumen_excel(df).to_excel(writer, sheet_name="Resumen", index=False)
         preparar_estado_area_excel(df).to_excel(
             writer, sheet_name="Estado por Área", index=False
@@ -426,9 +427,7 @@ def adjuntar_excel(mensaje, archivo_excel):
     mensaje.attach(adjunto)
 
 
-def crear_mensaje(
-    destinatario, asunto, texto, html, archivo_excel, graficos
-):  # noqa: PLR0913, PLR0917
+def crear_mensaje(destinatario, asunto, texto, html, archivo_excel, graficos):
     """Construye el mensaje MIME completo conservando el diseño institucional."""
     mensaje = MIMEMultipart("related")
     mensaje["To"] = destinatario
@@ -445,9 +444,7 @@ def crear_mensaje(
     return mensaje
 
 
-def enviar_correo(
-    service, destinatario, asunto, texto, html, archivo_excel, graficos
-):  # noqa: PLR0913, PLR0917
+def enviar_correo(service, destinatario, asunto, texto, html, archivo_excel, graficos):
     """Envía un correo mediante Gmail API."""
     mensaje = crear_mensaje(destinatario, asunto, texto, html, archivo_excel, graficos)
     raw = base64.urlsafe_b64encode(mensaje.as_bytes()).decode()
@@ -484,7 +481,7 @@ def mostrar_modo_prueba(correo, asunto, archivo_excel, archivo_html):
     logger.info("MODO PRUEBA. Correo NO enviado")
 
 
-def procesar_envio_informe(  # noqa: PLR0913, PLR0917
+def procesar_envio_informe(
     service,
     nombre_informe,
     correo,
@@ -514,7 +511,7 @@ def procesar_envio_informe(  # noqa: PLR0913, PLR0917
             correo,
             resultado.get("id", "N/A"),
         )
-    except Exception:  # noqa: BLE001
+    except Exception:
         logger.exception("Error enviando informe %s", nombre_informe)
 
 
@@ -599,7 +596,7 @@ def procesar_informe_general(service, df):
             archivo_excel,
             archivo_html,
         )
-    except Exception:  # noqa: BLE001
+    except Exception:
         logger.exception("Error enviando informe general")
 
 
@@ -696,6 +693,6 @@ def enviar_correo_pqrsd_nuevo(
             radicado,
             resultado.get("id", "N/A"),
         )
-    except Exception:  # noqa: BLE001
+    except Exception:
         logger.exception("Error enviando correo inmediato de PQRSD %s", radicado)
         raise

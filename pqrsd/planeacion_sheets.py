@@ -84,7 +84,7 @@ class PlaneacionSheetsAppender:
                 "sheets", "v4", credentials=credentials, cache_discovery=False
             )
             return self._sheets_service
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             raise RuntimeError(
                 "No se pudo inicializar el servicio de Google Sheets: " f"{e}"
             ) from e
@@ -228,9 +228,7 @@ class PlaneacionSheetsAppender:
         )
         valores = resultado.get("values", [])
         return {
-            str(fila[0]).strip()
-            for fila in valores
-            if fila and str(fila[0]).strip()
+            str(fila[0]).strip() for fila in valores if fila and str(fila[0]).strip()
         }
 
     def _filtrar_registros_nuevos(self, df_salida, ultima_fecha, radicados_existentes):
@@ -319,4 +317,8 @@ class PlaneacionSheetsAppender:
             return timestamp.strftime("%Y-%m-%d")
         if hasattr(valor, "isoformat") and not isinstance(valor, str):
             return valor.isoformat()
-        return str(valor)
+        texto = str(valor)
+        # Neutralizar inyección de fórmulas: USER_ENTERED interpreta "=", "+", "-", "@"
+        if texto.startswith(("=", "+", "-", "@", "\t", "\r")):
+            return "'" + texto
+        return texto

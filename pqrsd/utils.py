@@ -13,6 +13,18 @@ def separador(texto=""):
         print("=" * 70)
 
 
+_PREFIJOS_FORMULA = ("=", "+", "-", "@", "\t", "\r")
+
+
+def neutralizar_formulas(df):
+    """Escapa cadenas que Excel interpretaría como fórmula (formula injection)."""
+    return df.map(
+        lambda v: (
+            f"'{v}" if isinstance(v, str) and v.startswith(_PREFIJOS_FORMULA) else v
+        )
+    )
+
+
 def normalizar_texto(valor):
     """Convierte a mayúsculas, elimina tildes y normaliza espacios."""
     if pd.isna(valor):
@@ -41,7 +53,7 @@ def _convertir_fecha_scalar(valor):
     for fmt in formatos:
         try:
             return pd.Timestamp(
-                datetime.datetime.strptime(str(valor).strip(), fmt),  # noqa: DTZ007
+                datetime.datetime.strptime(str(valor).strip(), fmt),
             )
         except (ValueError, TypeError):
             continue
