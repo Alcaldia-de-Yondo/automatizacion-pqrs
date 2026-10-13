@@ -1,1 +1,0 @@
-const REPO = 'C:/Users/TIC/Documents/Automatización PQRS'
