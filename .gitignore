@@ -134,6 +134,7 @@ __pycache__/
 
 # Logs y archivos temporales
 logs/
+tmp/
 *.txt
 !requirements.txt
 !requirements-dev.txt
@@ -151,6 +152,7 @@ logs/
 
 # Excel generados
 *.xlsx
+*.csv
 
 # Scripts de parcheo
 append_drive.py

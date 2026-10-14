@@ -78,7 +78,7 @@ class PlaneacionSheetsAppender:
 
             credentials = Credentials.from_authorized_user_file(
                 self.config.GOOGLE_OAUTH_TOKEN,
-                scopes=["https://www.googleapis.com/auth/drive"],
+                scopes=list(Config.GMAIL_SCOPES),
             )
             self._sheets_service = build(
                 "sheets", "v4", credentials=credentials, cache_discovery=False
@@ -96,7 +96,7 @@ class PlaneacionSheetsAppender:
 
         credentials = Credentials.from_authorized_user_file(
             self.config.GOOGLE_OAUTH_TOKEN,
-            scopes=["https://www.googleapis.com/auth/drive"],
+            scopes=list(Config.GMAIL_SCOPES),
         )
         drive_service = build(
             "drive", "v3", credentials=credentials, cache_discovery=False

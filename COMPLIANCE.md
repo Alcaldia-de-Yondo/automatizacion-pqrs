@@ -1,19 +1,20 @@
 # Cumplimiento Normativo - PQRSD
 
-**Última verificación**: 2026-10-08
-**Commit**: aaad7c0
+**Última verificación**: 14 de octubre de 2026
+**Commit**: cambios sin commitear (clasificador híbrido ML + reglas)
 
 ## Estado por herramienta
 
 | Herramienta | Estado | Comando |
 |-------------|--------|---------|
-| **ruff** | ✅ 0 errores | `ruff check pqrsd/ tests/` |
-| **black** | ✅ 22 archivos OK | `black --check pqrsd/ tests/` |
-| **isort** | ✅ 0 sin ordenar | `isort --check-only pqrsd/ tests/` |
-| **mypy** | ✅ 0 errores en 17 archivos | `mypy pqrsd/` |
+| **ruff** | ✅ 0 errores | `ruff check pqrsd/ tests/ training/` |
+| **black** | ✅ 36 archivos OK | `black --check pqrsd/ tests/ training/` |
+| **isort** | ✅ 0 sin ordenar | `isort --check-only pqrsd/ tests/ training/` |
+| **mypy** | ✅ 0 errores en 23 archivos | `mypy pqrsd/` |
 | **bandit** | ✅ 0 issues de seguridad | `bandit -r pqrsd/ -ll` |
-| **pytest** | ✅ 27 passed | `pytest tests/` |
-| **coverage** | ✅ 72.68% (>= 50%) | `pytest --cov=pqrsd` |
+| **pip-audit** | ✅ 0 vulnerabilidades conocidas | `pip-audit` |
+| **pytest** | ✅ 58 passed | `pytest tests/` |
+| **coverage** | ✅ 59.03% (>= 50%) | `pytest --cov=pqrsd` |
 
 ## Normas cumplidas
 
@@ -36,9 +37,10 @@ pip install -r requirements-dev.txt
 pip install -e .
 
 # Correr todas las verificaciones
-python -m ruff check pqrsd/ tests/
-python -m black --check pqrsd/ tests/
-python -m isort --check-only pqrsd/ tests/
+python -m ruff check pqrsd/ tests/ training/
+python -m black --check pqrsd/ tests/ training/
+python -m isort --check-only pqrsd/ tests/ training/
 python -m mypy pqrsd/
 python -m bandit -r pqrsd/ -ll
+python -m pip-audit
 python -m pytest tests/ --cov=pqrsd --cov-report=term-missing

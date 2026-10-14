@@ -1,5 +1,16 @@
+"""Clasificador híbrido de áreas: ML primero, reglas como fallback.
+
+Flujo por cada resumen de asunto:
+1. Si el modelo ML está disponible y su confianza >= Config.CONFIANZA_MINIMA,
+   se usa el área predicha por el modelo.
+2. Si no, se usa el clasificador por reglas de palabras clave.
+3. Si las reglas no matchean, queda el default "SECRETARIA DE PLANEACIÓN".
+"""
+
+from .classifier_model import ModelClassifier
+from .classifier_rules import RulesClassifier
 from .config import Config
-from .utils import normalizar_texto, separador
+from .utils import separador
 
 
 class AreaClassifier:
@@ -7,6 +18,19 @@ class AreaClassifier:
 
     def __init__(self, config: Config):
         self.config = config
+        self.rules = RulesClassifier(config)
+        self.model = ModelClassifier(config)
+
+    def _clasificar_texto(self, texto) -> str:
+        """Clasifica un único texto con la estrategia híbrida."""
+        area_modelo, confianza = self.model.clasificar(texto)
+        if area_modelo is not None and confianza >= self.config.CONFIANZA_MINIMA:
+            return area_modelo
+        return self.rules.clasificar(texto)
+
+    def _clasificar_por_palabras(self, texto):
+        """Compatibilidad hacia atrás: clasificación por reglas puras."""
+        return self.rules.clasificar(texto)
 
     def clasificar(self, df):
         """Clasifica exclusivamente RESUMEN DE ASUNTO en el catálogo autorizado."""
@@ -14,7 +38,7 @@ class AreaClassifier:
 
         df = df.copy()
         df[self.config.COL_AREA] = df[self.config.COL_RESUMEN_ASUNTO].map(
-            self._clasificar_por_palabras
+            self._clasificar_texto
         )
         df[self.config.COL_AREA] = df[self.config.COL_AREA].map(
             self._validar_area_clasificada
@@ -35,35 +59,6 @@ class AreaClassifier:
         print(f"Valores utilizados en este proceso: {len(valores_obtenidos)}")
 
         return df
-
-    def _clasificar_por_palabras(self, texto):
-        """Devuelve la categoría con el mayor número de coincidencias de palabras clave."""
-        texto_normalizado = normalizar_texto(texto)
-
-        # Contar coincidencias para cada área
-        puntuaciones = []
-        for area, palabras in self.config.REGLAS_AREAS:
-            # Contar cuántas palabras de esta área aparecen en el texto
-            coincidencias = sum(
-                1 for palabra in palabras if palabra in texto_normalizado
-            )
-            if coincidencias > 0:
-                puntuaciones.append((area, coincidencias))
-
-        # Si hay coincidencias, devolver el área con la puntuación más alta
-        # En caso de empate, elegir el que aparece primero en REGLAS_AREAS
-        if puntuaciones:
-            # Ordenar por puntuación (descendente) y luego por índice en REGLAS_AREAS (ascendente)
-            puntuaciones.sort(
-                key=lambda x: (
-                    -x[1],
-                    [area for area, _ in self.config.REGLAS_AREAS].index(x[0]),
-                )
-            )
-            return puntuaciones[0][0]
-
-        # Valor por defecto si no hay coincidencias
-        return "SECRETARIA DE PLANEACIÓN"
 
     def _validar_area_clasificada(self, valor):
         """Garantiza que la clasificación pertenezca al catálogo autorizado."""

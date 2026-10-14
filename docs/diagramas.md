@@ -13,7 +13,7 @@ flowchart TD
     B --> C["Preparar y normalizar datos"]
     C --> D["Identificar competencia de Planeación<br/>y filtrar por fecha de corte"]
     D --> E["Calcular estado<br/>(ABIERTO / CERRADO)"]
-    E --> F["Clasificar area responsable<br/>por palabras clave"]
+    E --> F["Clasificar área responsable<br/>(modelo ML con fallback<br/>por palabras clave)"]
     F --> G["Calcular fecha límite legal<br/>(10 / 15 / 30 días hábiles)"]
     G --> H["Preparar salida y detectar<br/>pendientes"]
     H --> I["Agregar al Sheets de Planeación"]
@@ -29,22 +29,28 @@ Cómo se decide el área de una PQRSD a partir del *RESUMEN DE ASUNTO*:
 
 ```mermaid
 flowchart TD
-    A["Leer RESUMEN DE ASUNTO"] --> B["Normalizar texto<br/>(mayúsculas, sin caracteres<br/>especiales)"]
-    B --> C["Contar palabras clave<br/>por cada área"]
-    C --> D{"Hay areas con coincidencias?"}
-    D -- Sí --> E["Area con mas coincidencias"]
-    D -- No --> K["Area por defecto: SECRETARIA DE PLANEACIÓN"]
-    E --> H{"Esta en el catalogo de 11 areas?"}
-    H -- Sí --> I["Area asignada"]
-    H -- No --> J["ERROR: valor no autorizado"]
-    K --> I
-    E --> L["En caso de empate: gana el área definida primero"]
-    L --> H
+    A["Leer RESUMEN DE ASUNTO"] --> B["Normalizar texto<br/>(mayúsculas, sin tildes)"]
+    B --> C{"Modelo ML disponible?"}
+    C -- No --> G["Clasificar por palabras clave"]
+    C -- Sí --> D["Predicción del modelo<br/>+ confianza 0-1"]
+    D --> E{"Confianza >=<br/>umbral 0.7?"}
+    E -- Sí --> I["Área asignada por el modelo"]
+    E -- No --> G
+    G --> H{"Hay áreas con<br/>coincidencias?"}
+    H -- Sí --> J["Área con más coincidencias<br/>(en empate, la primera del orden)"]
+    H -- No --> K["Área por defecto: SECRETARIA DE PLANEACIÓN"]
+    J --> L{"Está en el catálogo de 12 áreas?"}
+    I --> L
+    K --> L
+    L -- Sí --> M["Área asignada"]
+    L -- No --> N["ERROR: valor no autorizado"]
 ```
 
 **Reglas de negocio:**
-- Gana el área con más palabras clave coincidentes; en empate prevalece el
-  orden del catálogo; sin coincidencia → SECRETARIA DE PLANEACIÓN.
+- El modelo ML (TF-IDF + Regresión Logística, entrenado con PQRS reales)
+  decide cuando su confianza es ≥ 0.7; si no, gobierna el clasificador por
+  palabras clave: gana el área con más coincidencias, en empate prevalece
+  el orden del catálogo, y sin coincidencia → SECRETARIA DE PLANEACIÓN.
 
 ---
 

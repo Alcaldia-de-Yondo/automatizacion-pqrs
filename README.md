@@ -10,7 +10,10 @@ Sistema para automatizar el procesamiento de archivos Excel de PQRS (Peticiones,
 - Identificación de registros relacionados con planeación
 - Filtrado por fecha de corte
 - Cálculo de estados (ABIERTO/CERRADO)
-- Clasificación de áreas basada en palabras clave
+- Clasificación de áreas híbrida: modelo ML (TF-IDF + Regresión Logística)
+  entrenado con PQRS reales como decisor principal, y reglas de palabras
+  clave como fallback cuando la confianza es baja o el modelo no está
+  disponible
 - Cálculo de fechas límite legales
 - Generación de reportes y resúmenes
 - Exportación a Excel con formato profesional
@@ -87,7 +90,10 @@ automatizacion-pqrs/
 │   ├── identifiers.py     # Identificación de registros de planeación
 │   ├── filters.py         # Filtrado por fecha de corte
 │   ├── states.py          # Cálculo de estados
-│   ├── classifier.py      # Clasificación de áreas
+│   ├── classifier.py      # Clasificador híbrido de áreas (ML + reglas)
+│   ├── classifier_model.py# Wrapper del modelo ML entrenado (.pkl)
+│   ├── classifier_rules.py# Clasificación por palabras clave (fallback)
+│   ├── modelo_clasificador.pkl  # Modelo entrenado (TF-IDF + LogReg, joblib)
 │   ├── legal.py           # Cálculo de fechas límite legales
 │   ├── output.py          # Preparación de salida y extracción de pendientes
 │   ├── saver.py           # Guardado y formateo de Excel
@@ -96,6 +102,12 @@ automatizacion-pqrs/
 │   ├── main.py            # Orquestador principal
 │   └── utils.py           # Funciones auxiliares
 ├── tests/                 # Pruebas unitarias
+├── training/              # Dataset y pipeline de entrenamiento del modelo
+│   ├── extraer_datos.py   # Extrae textos del Excel y pre-clasifica
+│   ├── datos.csv          # Dataset etiquetado (fuente de entrenamiento)
+│   ├── entrenar.py        # Entrena y guarda modelo_clasificador.pkl
+│   ├── verificar.py       # Prueba el modelo con casos nuevos
+│   └── README.md          # Documentación del pipeline ML
 ├── .github/
 │   └── workflows/
 │       └── ci.yml         # Configuración de CI/CD
@@ -140,20 +152,31 @@ pytest --cov=pqrsd
 ## Formato de Código
 
 Este proyecto utiliza:
-- [Black](https://black.readthedocs.io/) para formato de código
+- [ruff](https://docs.astral.sh/ruff/) para linting
+- [black](https://black.readthedocs.io/) para formato de código
 - [isort](https://pycqa.github.io/isort/) para ordenamiento de imports
-- [Flake8](https://flake8.pycqa.org/) para linting
+- [mypy](https://mypy-lang.org/) para chequeo de tipos
 
-Ejecutar formateo:
+Ejecutar toda la verificación:
 ```bash
-black .
-isort .
+python -m ruff check pqrsd/ tests/ training/
+python -m black --check pqrsd/ tests/ training/
+python -m isort --check-only pqrsd/ tests/ training/
+python -m mypy pqrsd/
 ```
 
-Ejecutar linting:
-```bash
-flake8
-```
+## Clasificación de áreas (modelo ML)
+
+La clasificación usa un **modelo de aprendizaje automático**
+(TF-IDF + Regresión Logística, entrenado con PQRS reales etiquetadas) que
+decide cuando su confianza supera el umbral configurado
+(`CONFIANZA_MINIMA = 0.7` en `pqrsd/config.py`). Si la confianza es baja o
+el archivo del modelo no existe, se usan las **reglas de palabras clave**
+como fallback (degradación segura). Sin coincidencias, el caso se asigna
+por defecto a SECRETARIA DE PLANEACIÓN.
+
+El modelo está versionado en el repositorio (`pqrsd/modelo_clasificador.pkl`).
+Para re-entrenarlo con más datos, ver [training/README.md](training/README.md).
 
 ## Licencia
 

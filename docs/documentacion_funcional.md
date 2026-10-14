@@ -2,7 +2,7 @@
 
 **Entidad:** Alcaldía de Yondó, Antioquia
 **Responsable:** Secretaría de Planeación TIC's y Desarrollo Territorial
-**Versión:** 1.0 — 2026
+**Versión:** 1.1 — 2026
 
 ---
 
@@ -56,7 +56,19 @@ determinística, trazable (con bitácora de envíos) y auditable.
 ### Principio general
 
 La clasificación se realiza **exclusivamente sobre el campo "RESUMEN DE
-ASUNTO"** mediante un algoritmo de coincidencia de palabras clave:
+ASUNTO"** y usa una estrategia **híbrida**:
+
+1. Un **modelo de aprendizaje automático** (TF-IDF + Regresión Logística,
+   entrenado con 1.353 PQRS reales etiquetadas manualmente) predice el
+   área y una **confianza** (0–1).
+2. Si la confianza es **≥ 0.7** (umbral configurable en
+   `Config.CONFIANZA_MINIMA`), se asigna el área predicha por el modelo.
+3. Si la confianza es menor —o el archivo del modelo no existe—, se usa el
+   **clasificador por palabras clave** como fallback.
+4. Si ninguna palabra clave coincide, el caso se asigna por defecto a
+   **SECRETARIA DE PLANEACIÓN** como área receptora y redistribuidora.
+
+El fallback por palabras clave funciona así:
 
 1. El resumen del asunto se normaliza (mayúsculas, sin espacios sobrantes,
    texto homogéneo).
@@ -67,8 +79,6 @@ ASUNTO"** mediante un algoritmo de coincidencia de palabras clave:
 5. En caso de **empate**, prevalece el área definida primero en el orden
    de reglas (las reglas más específicas se configuran antes que las
    generales para evitar ambigüedades).
-6. Si **ninguna** palabra clave coincide, el caso se asigna por defecto a
-   **SECRETARIA DE PLANEACIÓN** como área receptora y redistribuidora.
 
 ### Catálogo de áreas permitidas
 
@@ -88,7 +98,8 @@ detiene la ejecución (garantía de integridad del dato):
 | 8 | SENA |
 | 9 | SISBEN |
 | 10 | SOPORTE TIC |
-| 11 | TICS |
+| 11 | SUPERVISION |
+| 12 | TICS |
 
 ### Ejemplos lógicos de correspondencia
 
@@ -102,6 +113,7 @@ detiene la ejecución (garantía de integridad del dato):
 | GESTION DE RIESGOS | Emergencias, desastres, damnificados |
 | ABOGADA(O) | Tutelas, recursos, conceptos jurídicos |
 | COMUNICACIONES | Prensa, redes sociales, publicidad institucional |
+| SUPERVISION | Supervisión e interventoría de contratos y obras |
 | SOPORTE TIC | Mesa de ayuda, equipos de cómputo, contraseñas |
 | TICS | Software, plataformas, página web, seguridad informática |
 
@@ -196,7 +208,7 @@ CIERRE ◄──── SEGUIMIENTO ◄──── RESPUESTA DEL ÁREA ◄──
    recepción (Drive/Excel).
 2. **Registro:** el sistema carga, valida columnas y normaliza fechas.
 3. **Clasificación:** se identifica si es competencia de Planeación y se
-   asigna el área u oficina por palabras clave.
+   asigna el área u oficina (modelo ML con fallback de palabras clave).
 4. **Asignación:** se calcula el término legal y la fecha límite en días
    hábiles.
 5. **Notificación:** se agrega al Sheets de Planeación y se envía correo

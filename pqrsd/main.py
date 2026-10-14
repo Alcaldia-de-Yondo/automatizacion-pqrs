@@ -111,7 +111,9 @@ class OrquestadorPrincipal:
         # Limpieza opcional del archivo temporal descargado de Drive
         efectivo = getattr(self.config, "EFFECTIVE_ARCHIVO_ORIGEN", None)
         if efectivo is not None and self.config.USE_GOOGLE_DRIVE:
-            with contextlib.suppress(OSError):  # el SO limpiará el temporal eventualmente
+            with contextlib.suppress(
+                OSError
+            ):  # el SO limpiará el temporal eventualmente
                 Path(efectivo).unlink(missing_ok=True)
 
     def _procesar_notificaciones_email(self, df_salida, pqrsd_nuevos):

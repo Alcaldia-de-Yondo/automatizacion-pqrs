@@ -115,6 +115,107 @@ def test_catastro_matricula_y_escritura():
         assert result["AREA"].iloc[0] == "CATASTRO"
 
 
+def test_sisben_gana_sobre_derecho_de_peticion():
+    """SISBEN es el tema principal aunque el texto diga DERECHO DE PETICION."""
+    config = Config()
+    classifier = AreaClassifier(config)
+    casos = [
+        "DERECHO DE PETICION - SOLICITUD DE REVISION DE CLASIFICACION SISBEN IV",
+        "SOLICITUD DE REVISION Y ACTUALIZACION DE LA CLASIFICACION DEL SISBEN",
+        "CAMBIO DE CLASIFICACION EN FICHA FAMILIAR GRUPO B5",
+        "AFILIACION AL SISBEN Y REGIMEN SUBSIDIADO",
+    ]
+    for caso in casos:
+        df = pd.DataFrame({"RESUMEN DE ASUNTO": [caso]})
+        result = classifier.clasificar(df)
+        assert result["AREA"].iloc[0] == "SISBEN"
+
+
+def test_ordenamiento_palabras_nuevas():
+    """Licencias urbanísticas, radio de acción y subdivisión van a ORDENAMIENTO."""
+    config = Config()
+    classifier = AreaClassifier(config)
+    casos = [
+        "DERECHO DE PETICION - SOLICITUD DE VERIFICACION DE LICENCIA URBANISTICA",
+        "SOLICITUD DE INFORMACION SOBRE EL RADIO DE ACCION DEL BARRIO",
+        "SOLICITUD DE SUBDIVISION Y DESENGLOBE DE PREDIO EN LA VEREDA",
+        "INSTALACION DE POSTES ELECTRICOS EN EL CORREGIMIENTO",
+    ]
+    for caso in casos:
+        df = pd.DataFrame({"RESUMEN DE ASUNTO": [caso]})
+        result = classifier.clasificar(df)
+        assert result["AREA"].iloc[0] == "ORDENAMIENTO TERRITORIAL"
+
+
+def test_gestion_riesgos_palabras_nuevas():
+    """Roedores, contaminación y riesgo inminente van a GESTION DE RIESGOS."""
+    config = Config()
+    classifier = AreaClassifier(config)
+    casos = [
+        "SOLICITUD DE VISITA DE INSPECCION POR PRESENCIA DE ROEDORES",
+        "REPORTE DE CONTAMINACION AMBIENTAL Y DISPOSICION ILEGAL DE RESIDUOS",
+        "ARBOLES EN RIESGO INMINENTE DE COLAPSO",
+    ]
+    for caso in casos:
+        df = pd.DataFrame({"RESUMEN DE ASUNTO": [caso]})
+        result = classifier.clasificar(df)
+        assert result["AREA"].iloc[0] == "GESTION DE RIESGOS"
+
+
+def test_comunicaciones_palabras_nuevas():
+    """Huellas Colombianas y Teleantioquia van a COMUNICACIONES."""
+    config = Config()
+    classifier = AreaClassifier(config)
+    df = pd.DataFrame(
+        {"RESUMEN DE ASUNTO": ["PROGRAMA HUELLAS COLOMBIANAS PARA TELEANTIOQUIA"]}
+    )
+    result = classifier.clasificar(df)
+    assert result["AREA"].iloc[0] == "COMUNICACIONES"
+
+
+def test_banco_proyectos_palabras_nuevas():
+    """Formulación y ejecución de proyectos van al BANCO DE PROYECTOS."""
+    config = Config()
+    classifier = AreaClassifier(config)
+    casos = [
+        "FORMULACION DE PROYECTO PRODUCTIVO CON ARTICULACION TERRITORIAL",
+        "EJECUCION DE PROYECTO Y GESTION DE RECURSOS BPIN",
+    ]
+    for caso in casos:
+        df = pd.DataFrame({"RESUMEN DE ASUNTO": [caso]})
+        result = classifier.clasificar(df)
+        assert result["AREA"].iloc[0] == "BANCO DE PROYECTOS"
+
+
+def test_abogada_terminos_legales():
+    """Liquidación y pago de contrato va a ABOGADA(O)."""
+    config = Config()
+    classifier = AreaClassifier(config)
+    casos = [
+        "DERECHO DE PETICION - SOLICITUD DE LIQUIDACION Y PAGO DEL CONTRATO",
+        "ACCION DE TUTELA POR VENCIMIENTO DE TERMINOS",
+    ]
+    for caso in casos:
+        df = pd.DataFrame({"RESUMEN DE ASUNTO": [caso]})
+        result = classifier.clasificar(df)
+        assert result["AREA"].iloc[0] == "ABOGADA(O)"
+
+
+def test_catastro_palabras_nuevas():
+    """Mutaciones, linderos y valoraciones van a CATASTRO."""
+    config = Config()
+    classifier = AreaClassifier(config)
+    casos = [
+        "CORRECCION DE AREA DE LA FICHA CATASTRAL",
+        "REVISION DE AVALUO Y LINDEROS DEL PREDIO",
+        "DESINCORPORACION CATASTRAL DEL PREDIO BALDIO",
+    ]
+    for caso in casos:
+        df = pd.DataFrame({"RESUMEN DE ASUNTO": [caso]})
+        result = classifier.clasificar(df)
+        assert result["AREA"].iloc[0] == "CATASTRO"
+
+
 def test_fallback_generico_sigue_siendo_planeacion():
     """Texto genérico sin keywords temáticas sigue cayendo al default."""
     config = Config()
