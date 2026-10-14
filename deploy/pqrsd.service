@@ -5,8 +5,8 @@ After=network.target
 [Service]
 Type=oneshot
 User=admin_seguridad
-WorkingDirectory=/home/admin_seguridad/Automatizacion_Pqrsd
-ExecStart=/home/admin_seguridad/Automatizacion_Pqrsd/scripts/run.sh
-UMask=0077
-NoNewPrivileges=true
-ProtectSystem=full
+WorkingDirectory=/home/admin_seguridad/automatizacion-pqrs
+ExecStart=/home/admin_seguridad/automatizacion-pqrs/scripts/run.sh
+
+[Install]
+WantedBy=multi-user.target
