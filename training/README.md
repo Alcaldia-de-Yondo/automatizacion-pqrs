@@ -19,13 +19,21 @@ palabras clave (`pqrsd/classifier_rules.py`) actúan de fallback.
 ## Re-entrenar
 
 1. Editar `datos.csv` (columnas `texto`, `area`; áreas del catálogo oficial).
-2. `PYTHONPATH=. python training/entrenar.py`
+2. Entrenar con la versión de scikit-learn fijada en `requirements.txt`
+   (actualmente `~=1.7.2`, la última con soporte para Python 3.10):
+   `PYTHONPATH=. python training/entrenar.py`
    - Clases con <5 ejemplos van completas a train (no se pueden estratificar).
    - Las demás: split 80/20 estratificado, `random_state=42`.
    - Imprime accuracy, classification report y matriz de confusión.
 3. `PYTHONPATH=. python training/verificar.py`
 4. Ejecutar `python -m pytest tests/ -q`.
 5. Commit del nuevo `pqrsd/modelo_clasificador.pkl` junto al código.
+
+> **Compatibilidad:** el `.pkl` solo es seguro ejecutar con la misma versión
+> de scikit-learn con la que se entrenó. El runtime (`ModelClassifier`)
+> hace una prueba de humo al cargar y, si el modelo no es compatible,
+> degrada a reglas en lugar de fallar. Si algún día se sube la versión de
+> scikit-learn, **hay que re-entrenar el modelo** con la nueva versión.
 
 ## Modelo
 

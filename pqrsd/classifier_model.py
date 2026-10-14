@@ -19,7 +19,11 @@ class ModelClassifier:
         self.modelo = None
         if config.MODELO_PATH.exists():
             try:
-                self.modelo = joblib.load(config.MODELO_PATH)
+                modelo = joblib.load(config.MODELO_PATH)
+                # Prueba de humo: si el .pkl fue entrenado con otra versión de
+                # scikit-learn, carga pero falla al predecir; se detecta aquí.
+                _ = modelo.predict([normalizar_texto("prueba")])
+                self.modelo = modelo
             except Exception as exc:  # modelo corrupto o versión incompatible
                 print(f"Advertencia: no se pudo cargar el modelo ML: {exc}")
 
